@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Generator</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>QR Generator</h1>
+
+        <input
+            type="text"
+            id="qrInput"
+            placeholder="Введіть текст або URL"
+        >
+
+        <div class="settings">
+
+            <div class="field">
+                <label>Розмір</label>
+                <select id="qrSize">
+                    <option value="200">200 x 200</option>
+                    <option value="300" selected>300 x 300</option>
+                    <option value="400">400 x 400</option>
+                    <option value="500">500 x 500</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Колір QR</label>
+                <input
+                    type="color"
+                    id="darkColor"
+                    value="#000000"
+                >
+            </div>
+
+            <div class="field">
+                <label>Колір фону</label>
+                <input
+                    type="color"
+                    id="lightColor"
+                    value="#ffffff"
+                >
+            </div>
+
+        </div>
+
+        <div class="buttons">
+            <button onclick="generateQR()">
+                Згенерувати
+            </button>
+
+            <button onclick="downloadQR()">
+                Завантажити PNG
+            </button>
+        </div>
+
+        <div id="qrcode"></div>
+
+    </div>
+
+    <script src="js/app.js"></script>
+
+</body>
+</html>
