@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Створюйте QR-коди з власним розміром і кольорами та завантажуйте їх у форматі PNG.">
+    <meta name="description" content="Створюйте QR-коди для посилань, Wi-Fi, контактів та повідомлень. Налаштовуйте стиль і завантажуйте PNG або SVG.">
     <meta name="theme-color" content="#f5f7fb">
     <title>Генератор QR-кодів</title>
 
@@ -15,56 +15,72 @@
         <header class="page-header">
             <p class="eyebrow">Безкоштовно · прямо у браузері</p>
             <h1>Генератор QR-кодів</h1>
-            <p class="intro">Створіть QR-код для посилання або будь-якого тексту та збережіть його як PNG.</p>
+            <p class="intro">Створюйте QR-коди для посилань, Wi-Fi, контактів та повідомлень. Текст не залишає ваш браузер.</p>
         </header>
 
         <form id="qrForm">
             <div class="field">
-                <label for="qrInput">Текст або посилання</label>
-                <input
-                    type="text"
-                    id="qrInput"
-                    placeholder="https://example.com"
-                    autocomplete="url"
-                    required
-                >
+                <label for="qrType">Що має містити QR-код?</label>
+                <select id="qrType" name="qrType">
+                    <option value="text">Текст або посилання</option>
+                    <option value="wifi">Доступ до Wi-Fi</option>
+                    <option value="vcard">Контактна картка (vCard)</option>
+                    <option value="email">Електронна пошта</option>
+                    <option value="phone">Номер телефону</option>
+                    <option value="sms">SMS-повідомлення</option>
+                </select>
             </div>
+
+            <div id="templateFields" class="template-fields"></div>
 
             <div class="settings">
                 <div class="field">
+                    <label for="qrPreset">Готовий стиль</label>
+                    <select id="qrPreset" name="qrPreset">
+                        <option value="screen">Для екрана</option>
+                        <option value="print">Для друку</option>
+                        <option value="natural">Фірмовий: ліс і кремовий</option>
+                        <option value="custom">Власні налаштування</option>
+                    </select>
+                </div>
+                <div class="field">
                     <label for="qrSize">Розмір зображення</label>
-                    <select id="qrSize">
+                    <select id="qrSize" name="qrSize">
                         <option value="200">200 × 200 px</option>
                         <option value="300" selected>300 × 300 px</option>
                         <option value="400">400 × 400 px</option>
                         <option value="500">500 × 500 px</option>
                     </select>
                 </div>
-
                 <div class="field">
                     <label for="darkColor">Колір QR-коду</label>
-                    <input type="color" id="darkColor" value="#000000">
+                    <input type="color" id="darkColor" name="darkColor" value="#172033">
                 </div>
-
                 <div class="field">
                     <label for="lightColor">Колір фону</label>
-                    <input type="color" id="lightColor" value="#ffffff">
+                    <input type="color" id="lightColor" name="lightColor" value="#ffffff">
                 </div>
             </div>
 
             <div class="buttons">
                 <button class="button-primary" type="submit">Згенерувати QR-код</button>
-                <button class="button-secondary" id="downloadButton" type="button" disabled>Завантажити PNG</button>
+                <button class="button-secondary" id="downloadPngButton" type="button" disabled>Завантажити PNG</button>
+                <button class="button-secondary" id="downloadSvgButton" type="button" disabled>Завантажити SVG</button>
+                <button class="button-secondary" id="copyButton" type="button" disabled>Копіювати зображення</button>
+                <button class="button-plain" id="clearButton" type="button">Очистити</button>
             </div>
         </form>
 
         <section class="preview" aria-labelledby="previewTitle">
             <h2 id="previewTitle">Попередній перегляд</h2>
             <div id="qrcode" aria-label="Згенерований QR-код"></div>
-            <p id="status" class="status" role="status" aria-live="polite">Введіть текст або посилання, щоб створити QR-код.</p>
+            <p id="status" class="status" role="status" aria-live="polite">Введіть текст або виберіть шаблон.</p>
+            <p id="contrastWarning" class="contrast-warning" hidden></p>
+            <p class="quiet-zone-note">Завантажені файли містять вільне поле навколо коду для надійнішого сканування.</p>
         </section>
     </main>
 
+    <div id="qrEngine" class="qr-engine" aria-hidden="true"></div>
     <script src="js/app.js"></script>
 </body>
 </html>
