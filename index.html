@@ -3,71 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Generator</title>
+    <meta name="description" content="Створюйте QR-коди з власним розміром і кольорами та завантажуйте їх у форматі PNG.">
+    <meta name="theme-color" content="#f5f7fb">
+    <title>Генератор QR-кодів</title>
 
     <link rel="stylesheet" href="css/style.css">
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+    <main class="container">
+        <header class="page-header">
+            <p class="eyebrow">Безкоштовно · прямо у браузері</p>
+            <h1>Генератор QR-кодів</h1>
+            <p class="intro">Створіть QR-код для посилання або будь-якого тексту та збережіть його як PNG.</p>
+        </header>
 
-    <div class="container">
-
-        <h1>QR Generator</h1>
-
-        <input
-            type="text"
-            id="qrInput"
-            placeholder="Введіть текст або URL"
-        >
-
-        <div class="settings">
-
+        <form id="qrForm">
             <div class="field">
-                <label>Розмір</label>
-                <select id="qrSize">
-                    <option value="200">200 x 200</option>
-                    <option value="300" selected>300 x 300</option>
-                    <option value="400">400 x 400</option>
-                    <option value="500">500 x 500</option>
-                </select>
-            </div>
-
-            <div class="field">
-                <label>Колір QR</label>
+                <label for="qrInput">Текст або посилання</label>
                 <input
-                    type="color"
-                    id="darkColor"
-                    value="#000000"
+                    type="text"
+                    id="qrInput"
+                    placeholder="https://example.com"
+                    autocomplete="url"
+                    required
                 >
             </div>
 
-            <div class="field">
-                <label>Колір фону</label>
-                <input
-                    type="color"
-                    id="lightColor"
-                    value="#ffffff"
-                >
+            <div class="settings">
+                <div class="field">
+                    <label for="qrSize">Розмір зображення</label>
+                    <select id="qrSize">
+                        <option value="200">200 × 200 px</option>
+                        <option value="300" selected>300 × 300 px</option>
+                        <option value="400">400 × 400 px</option>
+                        <option value="500">500 × 500 px</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="darkColor">Колір QR-коду</label>
+                    <input type="color" id="darkColor" value="#000000">
+                </div>
+
+                <div class="field">
+                    <label for="lightColor">Колір фону</label>
+                    <input type="color" id="lightColor" value="#ffffff">
+                </div>
             </div>
 
-        </div>
+            <div class="buttons">
+                <button class="button-primary" type="submit">Згенерувати QR-код</button>
+                <button class="button-secondary" id="downloadButton" type="button" disabled>Завантажити PNG</button>
+            </div>
+        </form>
 
-        <div class="buttons">
-            <button onclick="generateQR()">
-                Згенерувати
-            </button>
-
-            <button onclick="downloadQR()">
-                Завантажити PNG
-            </button>
-        </div>
-
-        <div id="qrcode"></div>
-
-    </div>
+        <section class="preview" aria-labelledby="previewTitle">
+            <h2 id="previewTitle">Попередній перегляд</h2>
+            <div id="qrcode" aria-label="Згенерований QR-код"></div>
+            <p id="status" class="status" role="status" aria-live="polite">Введіть текст або посилання, щоб створити QR-код.</p>
+        </section>
+    </main>
 
     <script src="js/app.js"></script>
-
 </body>
 </html>

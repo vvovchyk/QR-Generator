@@ -1,55 +1,85 @@
-function generateQR() {
+const qrForm = document.getElementById('qrForm');
+const qrInput = document.getElementById('qrInput');
+const qrContainer = document.getElementById('qrcode');
+const downloadButton = document.getElementById('downloadButton');
+const statusMessage = document.getElementById('status');
+const qrSettings = [
+    document.getElementById('qrSize'),
+    document.getElementById('darkColor'),
+    document.getElementById('lightColor')
+];
 
-    const text = document.getElementById('qrInput').value.trim();
+function clearQR(message) {
+    qrContainer.replaceChildren();
+    downloadButton.disabled = true;
+    statusMessage.textContent = message;
+}
 
-    const size = Number(
-        document.getElementById('qrSize').value
-    );
+qrForm.addEventListener('submit', (event) => {
+    event.preventDefault();
 
-    const darkColor =
-        document.getElementById('darkColor').value;
-
-    const lightColor =
-        document.getElementById('lightColor').value;
-
-    const qrContainer =
-        document.getElementById('qrcode');
-
-    qrContainer.innerHTML = '';
-
+    const text = qrInput.value.trim();
     if (!text) {
-        alert('Введіть текст або URL');
+        qrInput.setCustomValidity('Введіть текст або посилання.');
+        qrInput.reportValidity();
+        return;
+    }
+    qrInput.setCustomValidity('');
+
+    if (typeof QRCode === 'undefined') {
+        clearQR('Не вдалося завантажити бібліотеку QR-кодів. Перевірте підключення до інтернету й оновіть сторінку.');
         return;
     }
 
-    new QRCode(qrContainer, {
-        text: text,
-        width: size,
-        height: size,
-        colorDark: darkColor,
-        colorLight: lightColor,
-        correctLevel: QRCode.CorrectLevel.H
+    try {
+        const size = Number(document.getElementById('qrSize').value);
+        new QRCode(qrContainer, {
+            text,
+            width: size,
+            height: size,
+            colorDark: document.getElementById('darkColor').value,
+            colorLight: document.getElementById('lightColor').value,
+            correctLevel: QRCode.CorrectLevel.H
+        });
+        downloadButton.disabled = false;
+        statusMessage.textContent = 'QR-код готовий. Ви можете завантажити його у форматі PNG.';
+    } catch (error) {
+        clearQR('Не вдалося створити QR-код. Перевірте текст і спробуйте коротше значення.');
+        console.error('QR code generation failed:', error);
+    }
+});
+
+qrInput.addEventListener('input', () => {
+    qrInput.setCustomValidity('');
+    clearQR('Текст змінено. Згенеруйте QR-код ще раз.');
+});
+
+qrSettings.forEach((setting) => {
+    setting.addEventListener('change', () => {
+        clearQR('Налаштування змінено. Згенеруйте QR-код ще раз.');
     });
-}
+});
 
-function downloadQR() {
+downloadButton.addEventListener('click', () => {
+    const canvas = qrContainer.querySelector('canvas');
+    const image = qrContainer.querySelector('img');
+    let imageUrl;
 
-    const canvas =
-        document.querySelector('#qrcode canvas');
-
-    if (!canvas) {
-        alert('Спочатку згенеруйте QR-код');
+    try {
+        imageUrl = canvas ? canvas.toDataURL('image/png') : image?.src;
+    } catch (error) {
+        clearQR('Не вдалося підготувати зображення для завантаження. Згенеруйте QR-код ще раз.');
+        console.error('QR code download preparation failed:', error);
         return;
     }
 
-    const link =
-        document.createElement('a');
+    if (!imageUrl) {
+        clearQR('Не вдалося підготувати зображення для завантаження. Згенеруйте QR-код ще раз.');
+        return;
+    }
 
-    link.href =
-        canvas.toDataURL('image/png');
-
-    link.download =
-        'qr-code.png';
-
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = 'qr-code.png';
     link.click();
-}
+});
