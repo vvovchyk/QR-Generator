@@ -163,8 +163,21 @@ function updateConditionalFields() {
     });
 }
 
-function renderTemplateFields() {
+function renderTemplateFields(preserveValues = false) {
+    const values = preserveValues
+        ? Array.from(templateFields.querySelectorAll('input, select, textarea')).map((input) => [
+            input.name,
+            input.type === 'checkbox' ? input.checked : input.value
+        ])
+        : [];
     templateFields.replaceChildren(...templates[templateSelect.value].map(createField));
+    values.forEach(([name, value]) => {
+        const input = templateFields.querySelector(`[name="${name}"]`);
+        if (input) {
+            if (input.type === 'checkbox') input.checked = value;
+            else input.value = value;
+        }
+    });
     updateConditionalFields();
 }
 
@@ -369,12 +382,6 @@ qrForm.addEventListener('input', (event) => {
 qrForm.addEventListener('change', (event) => {
     if (event.target === templateSelect) {
         renderTemplateFields();
-
-        window.addEventListener('site-language-change', () => {
-            updateMessages();
-            renderTemplateFields();
-            invalidateQr(messages.empty);
-        });
         invalidateQr();
     } else if (event.target.name === 'security') {
         updateConditionalFields();
@@ -391,6 +398,23 @@ qrForm.addEventListener('change', (event) => {
         presetSelect.value = 'custom';
         invalidateQr();
     }
+});
+
+window.addEventListener('site-language-change', () => {
+    updateMessages();
+    renderTemplateFields(true);
+    if (currentQr) {
+        currentQr.canvas.setAttribute('aria-label', localize('Generated QR code'));
+        const warning = getContrastWarning();
+        contrastWarning.textContent = warning;
+        contrastWarning.hidden = !warning;
+        setStatus(messages.ready, warning ? 'warning' : '');
+        return;
+    }
+
+    const hasInput = Array.from(templateFields.querySelectorAll('input, select, textarea'))
+        .some((input) => input.type === 'checkbox' ? input.checked : input.value.trim());
+    setStatus(hasInput ? messages.edited : messages.empty);
 });
 
 document.getElementById('downloadPngButton').addEventListener('click', async () => {

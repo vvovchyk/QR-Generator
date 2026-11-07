@@ -19,4 +19,11 @@ Workflow `.github/workflows/deploy.yml` автоматично публікує 
 
 Поточна адреса GitHub Pages: `https://vvovchyk.github.io/QR-Generator/`.
 
-Проєкт не потребує кроку збірки чи встановлення залежностей.
+Проєкт не потребує кроку збірки чи залежностей для звичайного запуску. Браузерні
+тести потребують Python Playwright і Chromium:
+
+```bash
+python -m pip install -r requirements-test.txt
+python -m playwright install chromium
+python -m unittest discover -s tests -v
+```
