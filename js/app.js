@@ -1,48 +1,62 @@
-const messages = {
-    empty: 'Введіть текст або виберіть шаблон.',
-    edited: 'Дані змінено. Згенеруйте QR-код ще раз.',
-    ready: 'QR-код готовий. Можна завантажити PNG або SVG чи скопіювати зображення.',
-    missingLibrary: 'Не вдалося завантажити бібліотеку QR-кодів. Перевірте підключення до інтернету й оновіть сторінку.',
-    generationError: 'Не вдалося створити QR-код. Перевірте дані або спробуйте коротший текст.',
-    downloadError: 'Не вдалося підготувати файл. Згенеруйте QR-код ще раз.',
-    copyUnsupported: 'Цей браузер не підтримує копіювання зображень. Завантажте PNG-файл.',
-    copied: 'Зображення QR-коду скопійовано.',
-    copyError: 'Не вдалося скопіювати зображення. Перевірте дозвіл браузера на доступ до буфера обміну.',
-    lowContrast: 'Контраст кольорів низький. Виберіть темніший колір QR-коду та світліший фон для надійнішого сканування.',
-    reversed: 'QR-код світліший за фон. Більшість сканерів краще читають темний код на світлому фоні.'
+const englishMessages = {
+    empty: 'Enter some text or choose a template to get started.',
+    edited: 'Your details changed. Make your QR code again.',
+    ready: 'Your QR code is ready. Download a PNG or SVG, or copy the image.',
+    missingLibrary: 'The QR code library could not be loaded. Check your internet connection and refresh the page.',
+    generationError: 'Could not make that QR code. Check your details or try a shorter entry.',
+    downloadError: 'Could not prepare the file. Please make your QR code again.',
+    copyUnsupported: 'This browser cannot copy images to the clipboard. Download the PNG instead.',
+    copied: 'QR code image copied.',
+    copyError: 'Could not copy the image. Check your browser clipboard permission.',
+    lowContrast: 'These colors have low contrast. Choose a darker code and lighter background for more reliable scanning.',
+    reversed: 'The QR code is lighter than its background. Most scanners read a dark code on a light background more reliably.'
 };
+
+const messages = {};
+
+function localize(text) {
+    return window.SACK_OF_HACKS_I18N?.translate(text) || text;
+}
+
+function updateMessages() {
+    Object.entries(englishMessages).forEach(([key, text]) => {
+        messages[key] = localize(text);
+    });
+}
+
+updateMessages();
 
 const templates = {
     text: [
-        { name: 'text', label: 'Текст або посилання', type: 'textarea', required: true, rows: 4, placeholder: 'https://example.com' }
+        { name: 'text', label: 'Text or link', type: 'textarea', required: true, rows: 4, placeholder: 'https://example.com' }
     ],
     wifi: [
-        { name: 'ssid', label: 'Назва мережі (SSID)', required: true, autocomplete: 'off' },
-        { name: 'security', label: 'Захист мережі', type: 'select', options: [['WPA', 'WPA / WPA2 / WPA3'], ['WEP', 'WEP'], ['nopass', 'Без пароля']] },
-        { name: 'password', label: 'Пароль Wi-Fi', type: 'password', required: true, condition: { field: 'security', value: 'nopass', hideWhenMatches: true }, autocomplete: 'new-password' },
-        { name: 'hidden', label: 'Прихована мережа', type: 'checkbox' }
+        { name: 'ssid', label: 'Network name (SSID)', required: true, autocomplete: 'off' },
+        { name: 'security', label: 'Network security', type: 'select', options: [['WPA', 'WPA / WPA2 / WPA3'], ['WEP', 'WEP'], ['nopass', 'No password']] },
+        { name: 'password', label: 'Wi-Fi password', type: 'password', required: true, condition: { field: 'security', value: 'nopass', hideWhenMatches: true }, autocomplete: 'new-password' },
+        { name: 'hidden', label: 'Hidden network', type: 'checkbox' }
     ],
     vcard: [
-        { name: 'firstName', label: "Ім'я", required: true, autocomplete: 'given-name' },
-        { name: 'lastName', label: 'Прізвище', autocomplete: 'family-name' },
-        { name: 'organization', label: 'Організація' },
-        { name: 'title', label: 'Посада' },
-        { name: 'contactPhone', label: 'Телефон', type: 'tel', autocomplete: 'tel' },
-        { name: 'contactEmail', label: 'Електронна пошта', type: 'email', autocomplete: 'email' },
-        { name: 'website', label: 'Вебсайт', type: 'url', placeholder: 'https://example.com' },
-        { name: 'address', label: 'Адреса', type: 'textarea', rows: 2 }
+        { name: 'firstName', label: 'First name', required: true, autocomplete: 'given-name' },
+        { name: 'lastName', label: 'Last name', autocomplete: 'family-name' },
+        { name: 'organization', label: 'Organization' },
+        { name: 'title', label: 'Job title' },
+        { name: 'contactPhone', label: 'Phone', type: 'tel', autocomplete: 'tel' },
+        { name: 'contactEmail', label: 'Email address', type: 'email', autocomplete: 'email' },
+        { name: 'website', label: 'Website', type: 'url', placeholder: 'https://example.com' },
+        { name: 'address', label: 'Address', type: 'textarea', rows: 2 }
     ],
     email: [
-        { name: 'email', label: 'Адреса одержувача', type: 'email', required: true, autocomplete: 'email' },
-        { name: 'subject', label: 'Тема' },
-        { name: 'body', label: 'Повідомлення', type: 'textarea', rows: 3 }
+        { name: 'email', label: 'Recipient email address', type: 'email', required: true, autocomplete: 'email' },
+        { name: 'subject', label: 'Subject' },
+        { name: 'body', label: 'Message', type: 'textarea', rows: 3 }
     ],
     phone: [
-        { name: 'phone', label: 'Номер телефону', type: 'tel', required: true, placeholder: '+380 00 000 00 00', autocomplete: 'tel' }
+        { name: 'phone', label: 'Phone number', type: 'tel', required: true, placeholder: '+1 555 000 0000', autocomplete: 'tel' }
     ],
     sms: [
-        { name: 'smsPhone', label: 'Номер телефону', type: 'tel', required: true, placeholder: '+380 00 000 00 00', autocomplete: 'tel' },
-        { name: 'smsMessage', label: 'Текст повідомлення', type: 'textarea', rows: 3 }
+        { name: 'smsPhone', label: 'Phone number', type: 'tel', required: true, placeholder: '+1 555 000 0000', autocomplete: 'tel' },
+        { name: 'smsMessage', label: 'Text message', type: 'textarea', rows: 3 }
     ]
 };
 
@@ -88,8 +102,8 @@ function invalidateQr(message = messages.edited) {
 
 function createField(definition) {
     const wrapper = document.createElement('div');
-    wrapper.className = definition.type === 'checkbox' ? 'field checkbox-field' : 'field';
-    if (definition.type === 'textarea') wrapper.classList.add('field-wide');
+    wrapper.className = definition.type === 'checkbox' ? 'qr-field qr-checkbox-field' : 'qr-field';
+    if (definition.type === 'textarea') wrapper.classList.add('qr-field-wide');
     if (definition.condition) {
         wrapper.dataset.conditionField = definition.condition.field;
         wrapper.dataset.conditionValue = definition.condition.value;
@@ -105,20 +119,19 @@ function createField(definition) {
         input.type = 'checkbox';
         input.id = id;
         input.name = definition.name;
-        label.append(input, document.createTextNode(` ${definition.label}`));
+        label.append(input, document.createTextNode(` ${localize(definition.label)}`));
         wrapper.append(label);
         return wrapper;
     }
 
-    label.textContent = definition.label;
+    label.textContent = localize(definition.label);
     let input;
-
     if (definition.type === 'select') {
         input = document.createElement('select');
         definition.options.forEach(([value, text]) => {
             const option = document.createElement('option');
             option.value = value;
-            option.textContent = text;
+            option.textContent = localize(text);
             input.append(option);
         });
     } else if (definition.type === 'textarea') {
@@ -133,7 +146,7 @@ function createField(definition) {
     input.name = definition.name;
     input.required = Boolean(definition.required);
     if (definition.required) input.dataset.required = 'true';
-    if (definition.placeholder) input.placeholder = definition.placeholder;
+    if (definition.placeholder) input.placeholder = localize(definition.placeholder);
     if (definition.autocomplete) input.autocomplete = definition.autocomplete;
     wrapper.append(label, input);
     return wrapper;
@@ -175,12 +188,9 @@ function buildPayload() {
     switch (templateSelect.value) {
         case 'wifi': {
             const security = fieldValue('security');
-            const parts = [
-                `T:${security}`,
-                `S:${escapeWifi(fieldValue('ssid'))}`
-            ];
+            const parts = [`T:${security}`, `S:${escapeWifi(fieldValue('ssid'))}`];
             if (security !== 'nopass') parts.push(`P:${escapeWifi(fieldValue('password'))}`);
-                    if (qrForm.elements.namedItem('hidden').checked) parts.push('H:true');
+            if (qrForm.elements.namedItem('hidden').checked) parts.push('H:true');
             return `WIFI:${parts.join(';')};;`;
         }
         case 'vcard': {
@@ -192,14 +202,13 @@ function buildPayload() {
                 `N:${lastName};${firstName};;;`,
                 `FN:${[firstName, lastName].filter(Boolean).join(' ')}`
             ];
-            const optionalLines = [
+            [
                 ['organization', 'ORG'],
                 ['title', 'TITLE'],
                 ['contactPhone', 'TEL;TYPE=CELL'],
                 ['contactEmail', 'EMAIL'],
                 ['website', 'URL']
-            ];
-            optionalLines.forEach(([field, prefix]) => {
+            ].forEach(([field, prefix]) => {
                 const value = fieldValue(field);
                 if (value) lines.push(`${prefix}:${escapeVCard(value)}`);
             });
@@ -222,8 +231,7 @@ function buildPayload() {
             return `tel:${fieldValue('phone').replace(/\s+/g, '')}`;
         case 'sms': {
             const number = fieldValue('smsPhone').replace(/\s+/g, '');
-            const message = fieldValue('smsMessage');
-            return `SMSTO:${number}:${message}`;
+            return `SMSTO:${number}:${fieldValue('smsMessage')}`;
         }
         default:
             return fieldValue('text');
@@ -333,7 +341,7 @@ qrForm.addEventListener('submit', (event) => {
         );
         const canvas = drawQrCanvas(matrix, size, darkColor.value, lightColor.value);
         canvas.setAttribute('role', 'img');
-        canvas.setAttribute('aria-label', 'Згенерований QR-код');
+        canvas.setAttribute('aria-label', localize('Generated QR code'));
         qrContainer.replaceChildren(canvas);
         currentQr = { payload, matrix, canvas, size, dark: darkColor.value, light: lightColor.value };
         pngButton.disabled = false;
@@ -361,6 +369,12 @@ qrForm.addEventListener('input', (event) => {
 qrForm.addEventListener('change', (event) => {
     if (event.target === templateSelect) {
         renderTemplateFields();
+
+        window.addEventListener('site-language-change', () => {
+            updateMessages();
+            renderTemplateFields();
+            invalidateQr(messages.empty);
+        });
         invalidateQr();
     } else if (event.target.name === 'security') {
         updateConditionalFields();
